@@ -1,0 +1,11 @@
+{
+  "hostname": "localhost",
+  "port": 8082,
+  "validUserInfos": [
+    {
+      "email": "foo@bar.com",
+      "firstName": "foo",
+      "lastName": "bar"
+    }
+  ]
+}
