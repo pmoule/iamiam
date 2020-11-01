@@ -66,3 +66,10 @@ func loginCallback(w http.ResponseWriter, r *http.Request) {
 	json.Unmarshal(data, &userInfo)
 }
 ```
+## Documentation
+See package documentation:
+
+[![GoDoc](https://godoc.org/github.com/pmoule/iamiam?status.svg)](https://godoc.org/github.com/pmoule/iamiam)
+
+## License
+`iamiam` is released under Apache License 2.0. See [LICENSE](LICENSE).
