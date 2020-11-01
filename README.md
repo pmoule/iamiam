@@ -1,4 +1,4 @@
-# IAMIAM (yumyum)
+# IamIam (yumyum)
 A very simple oauth provider for testing purposes.
 
 ## How to use
@@ -49,7 +49,7 @@ state := base64.URLEncoding.EncodeToString(b)
 u := oauthConfig.AuthCodeURL(state)
 http.Redirect(w, r, u, http.StatusTemporaryRedirect)
 ```
-In the shown form just enter an email you like to use for authentication. (Email must be provided in `iam_config.json`). After this do the following stepts in your client application in your login callback handler.
+In the shown form just enter an email you like to use for authentication. (Email must be provided in `iam_config.json`). After this do the following steps in your login callback handler.
 ```
 func loginCallback(w http.ResponseWriter, r *http.Request) {
 	// do stuff like checking oauth state 
