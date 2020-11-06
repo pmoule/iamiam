@@ -5,12 +5,17 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
 	"strings"
 
 	"github.com/pmoule/iamiam/iamiam"
+)
+
+const (
+	loginFormFile string = "login.html"
 )
 
 // AuthCodeEntry an entry associated with a code.
@@ -108,10 +113,6 @@ func useEmail(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, u.String(), http.StatusFound)
 }
 
-type test struct {
-	Code string
-}
-
 func token(w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 	code := r.Form.Get("code")
@@ -161,14 +162,21 @@ func showLoginForm(code string, w http.ResponseWriter) {
 }
 
 func createLoginForm(code string) string {
-	loginForm := fmt.Sprintf(`
+	html, err := ioutil.ReadFile(loginFormFile)
+	form := ""
+
+	if err != nil {
+		form = fmt.Sprintf(`
 		<form method="POST" action="/use?code=%s">
-		Email: <input type="text" name="email">
+		<input type="text" name="email" placeholder="emails">
 		<input type="submit" value="Use">
 		</form>
 		`, code)
+	} else {
+		form = string(html)
+	}
 
-	return loginForm
+	return form
 }
 
 func createHeaders(w http.ResponseWriter) {
