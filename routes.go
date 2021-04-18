@@ -9,8 +9,9 @@ import (
 )
 
 // InitRouter initialises all all REST routes.
-func InitRouter(validUserInfos []*iamiam.UserInfo) *mux.Router {
+func InitRouter(validUserInfos []*iamiam.UserInfo, template string) *mux.Router {
 	knownUsers = append(knownUsers, validUserInfos...)
+	loginTemplate = template
 
 	r := mux.NewRouter()
 	r.Use(loggingMiddleware)
@@ -19,7 +20,16 @@ func InitRouter(validUserInfos []*iamiam.UserInfo) *mux.Router {
 	r.HandleFunc("/token", token).Methods(http.MethodPost)
 	r.HandleFunc("/info", info).Methods(http.MethodGet)
 
+	webDirName := ""
+	staticContentHandler := staticContent("./" + webDirName)
+	r.PathPrefix("/").Handler(staticContentHandler)
+
 	return r
+}
+
+func staticContent(dirName string) http.Handler {
+	staticContentDir := http.Dir(dirName)
+	return http.FileServer(staticContentDir)
 }
 
 func loggingMiddleware(next http.Handler) http.Handler {

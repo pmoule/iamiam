@@ -21,6 +21,7 @@ const (
 type configuration struct {
 	Hostname       string
 	Port           int
+	LoginTemplate  string
 	ValidUserInfos []*iamiam.UserInfo
 }
 
@@ -31,7 +32,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	router := InitRouter(config.ValidUserInfos)
+	router := InitRouter(config.ValidUserInfos, config.LoginTemplate)
 	address := fmt.Sprintf("%s:%d", config.Hostname, config.Port)
 	run(router, address)
 }

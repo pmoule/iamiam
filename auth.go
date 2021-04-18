@@ -14,10 +14,6 @@ import (
 	"github.com/pmoule/iamiam/iamiam"
 )
 
-const (
-	loginFormFile string = "login.html"
-)
-
 // AuthCodeEntry an entry associated with a code.
 type AuthCodeEntry struct {
 	RedirectURI string
@@ -45,6 +41,7 @@ type AuthTokenEntry struct {
 var knownUsers []*iamiam.UserInfo = []*iamiam.UserInfo{}
 var authCodeRegistry map[string]*AuthCodeEntry = map[string]*AuthCodeEntry{}
 var authTokenRegistry map[string]*AuthTokenEntry = map[string]*AuthTokenEntry{}
+var loginTemplate string = "login.html"
 
 func auth(w http.ResponseWriter, r *http.Request) {
 	redirectURIValue, ok := r.URL.Query()["redirect_uri"]
@@ -74,9 +71,7 @@ func auth(w http.ResponseWriter, r *http.Request) {
 	entry := &AuthCodeEntry{RedirectURI: redirectURI, State: state, Scope: scope}
 	code := createRandomValue()
 	authCodeRegistry[code] = entry
-	showLoginForm(code, w)
-
-	return
+	showLoginForm(code, entry.RedirectURI, w)
 }
 
 func useEmail(w http.ResponseWriter, r *http.Request) {
@@ -99,7 +94,7 @@ func useEmail(w http.ResponseWriter, r *http.Request) {
 	trimmedEmail := strings.TrimSpace(email)
 
 	if !isKnownUser(trimmedEmail) {
-		showLoginForm(code, w)
+		showLoginForm(code, entry.RedirectURI, w)
 
 		return
 	}
@@ -155,25 +150,26 @@ func info(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(userInfo)
 }
 
-func showLoginForm(code string, w http.ResponseWriter) {
+func showLoginForm(code string, redirectURI string, w http.ResponseWriter) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	loginForm := createLoginForm(code)
+	loginForm := createLoginForm(code, redirectURI)
 	fmt.Fprint(w, loginForm)
 }
 
-func createLoginForm(code string) string {
-	html, err := ioutil.ReadFile(loginFormFile)
+func createLoginForm(code string, redirectURI string) string {
+	html, err := ioutil.ReadFile(loginTemplate)
 	form := ""
 
 	if err != nil {
 		form = fmt.Sprintf(`
 		<form method="POST" action="/use?code=%s">
-		<input type="text" name="email" placeholder="emails">
-		<input type="submit" value="Use">
+			<input type="text" name="email" placeholder="emails">
+			<input type="submit" value="Sign in">
 		</form>
 		`, code)
 	} else {
-		form = string(html)
+		form = strings.Replace(string(html), "%s1", redirectURI, 1)
+		form = strings.Replace(form, "%s2", code, 1)
 	}
 
 	return form

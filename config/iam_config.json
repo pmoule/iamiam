@@ -1,6 +1,7 @@
 {
   "hostname": "localhost",
   "port": 8082,
+  "loginTemplate": "login.html",
   "validUserInfos": [
     {
       "email": "foo@bar.com",
