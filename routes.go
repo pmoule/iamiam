@@ -20,7 +20,7 @@ func InitRouter(validUserInfos []*iamiam.UserInfo, template string) *mux.Router 
 	r.HandleFunc("/token", token).Methods(http.MethodPost)
 	r.HandleFunc("/info", info).Methods(http.MethodGet)
 
-	webDirName := ""
+	webDirName := "web"
 	staticContentHandler := staticContent("./" + webDirName)
 	r.PathPrefix("/").Handler(staticContentHandler)
 
